@@ -1,0 +1,41 @@
+name: preply_case_study
+version: 1.0.0
+config-version: 2
+
+profile: preply_case_study
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+
+vars:
+  # Reference date for cycle / breakage logic (see dataset_README.md)
+  as_of_date: "2026-04-17"
+  # Optional partition window for staging (set by Airflow), e.g.:
+  # dbt run --vars '{"start_date": "2025-01-01", "end_date": "2025-01-31"}'
+  # start_date: null
+  # end_date: null
+
+models:
+  preply_case_study:
+    +persist_docs:
+      relation: true
+      columns: true
+    staging:
+      +materialized: table
+    intermediate:
+      +materialized: table
+      +schema: "{{ env_var('BQ_DATASET_INT') }}"
+      +meta:
+        as_of_date: "2026-04-17"
+    marts:
+      +materialized: table
+      +schema: "{{ env_var('BQ_DATASET_MART') }}"

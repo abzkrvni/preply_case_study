@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: stg_students
+    description: Staged student dimension from raw.students (light casts, join_date).
+    columns:
+      - name: student_id
+        description: Unique student identifier.
+        tests:
+          - unique
+          - not_null
+      - name: join_date
+        description: Date the student joined Preply.
+      - name: join_ts
+        description: Timestamp the student joined Preply.
+      - name: country_code
+        description: Student country (ISO-style code, e.g. US, DE, BR).
+      - name: acquisition_channel
+        description: How the student was acquired (CRM, Paid, Direct & Brand, WoM, Other).
+      - name: persona
+        description: Student segment (working_professional, relocator, exam_prepper, conversationalist).
+      - name: first_subject
+        description: First subject / language the student signed up to learn.
+
+  - name: stg_payments
+    description: Staged payment events from raw.payments (28-day cycle anchors).
+    columns:
+      - name: payment_id
+        description: Unique payment identifier.
+        tests:
+          - unique
+          - not_null
+      - name: student_id
+        description: Student who made the payment.
+        tests:
+          - not_null
+      - name: payment_date
+        description: Calendar date of the payment.
+      - name: payment_ts
+        description: Timestamp of the payment (cycle start).
+      - name: hours
+        description: Hours purchased in this payment (plan size).
+      - name: price_per_hour_usd
+        description: Price per hour in USD for this payment.
+
+  - name: stg_lessons
+    description: Staged lesson bookings from raw.lessons.
+    columns:
+      - name: lesson_id
+        description: Unique lesson booking identifier.
+        tests:
+          - unique
+          - not_null
+      - name: student_id
+        description: Student who booked the lesson.
+        tests:
+          - not_null
+      - name: booking_date
+        description: Calendar date of the booking.
+      - name: booking_ts
+        description: Timestamp of the lesson booking.
+      - name: hours_booked
+        description: Hours booked for this lesson (can be fractional, e.g. 0.5, 1.5).

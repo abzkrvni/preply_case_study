@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: int_breakage_actual
+    description: >
+      Closed payment cycles (cycle_end <= as_of_date). Final breakage fact:
+      unbooked hours in the full cycle × price_per_hour_usd.
+    config:
+      meta:
+        as_of_date: "2026-04-17"
+    columns:
+      - name: payment_id
+        description: Unique payment identifier (primary key).
+      - name: student_id
+        description: Student associated with the payment.
+      - name: payment_date
+        description: Calendar date of the payment.
+      - name: cycle_start_date
+        description: Start date of the 28-day payment cycle.
+      - name: cycle_end_date
+        description: End date of the cycle (next payment or payment + 28 days).
+      - name: as_of_date
+        description: Snapshot date used for open/closed cycle logic.
+      - name: hours_purchased
+        description: Hours in the payment plan.
+      - name: hours_booked_in_cycle
+        description: Total hours booked within the cycle window.
+      - name: hours_unbooked
+        description: Purchased hours not booked by cycle end (breakage hours).
+      - name: price_per_hour_usd
+        description: Price per hour in USD for this payment.
+      - name: breakage_usd
+        description: Final breakage revenue (hours_unbooked × price_per_hour_usd).
+      - name: country_code
+        description: Student country code.
+      - name: acquisition_channel
+        description: Student acquisition channel.
+      - name: persona
+        description: Student persona segment.
+      - name: first_subject
+        description: Student first subject / language learned.
+
+  - name: int_breakage_estimated
+    description: >
+      Open payment cycles at as_of_date. Estimated breakage using a global unbooked
+      rate from closed cycles (hours_purchased × pct_unbooked); high-utilization guard
+      when booking pace exceeds history.
+    config:
+      meta:
+        as_of_date: "2026-04-17"
+    columns:
+      - name: payment_id
+        description: Unique payment identifier (primary key).
+      - name: student_id
+        description: Student associated with the payment.
+      - name: payment_date
+        description: Calendar date of the payment.
+      - name: cycle_start_date
+        description: Start date of the 28-day payment cycle.
+      - name: cycle_end_date
+        description: End date of the cycle (still in the future at as_of_date).
+      - name: as_of_date
+        description: Snapshot date for the estimate.
+      - name: days_into_cycle
+        description: Days elapsed from cycle start to as_of_date.
+      - name: days_remaining
+        description: Days from as_of_date to cycle end.
+      - name: hours_purchased
+        description: Hours in the payment plan.
+      - name: hours_booked_to_as_of_date
+        description: Hours booked in the cycle up to as_of_date.
+      - name: hours_remaining
+        description: Purchased hours not yet booked as of as_of_date.
+      - name: price_per_hour_usd
+        description: Price per hour in USD for this payment.
+      - name: utilization_pct
+        description: Share of plan hours booked so far (booked / purchased).
+      - name: expected_booking_pct
+        description: Historical booking benchmark from closed cycles (1 - global pct unbooked).
+      - name: is_above_booking_pace
+        description: True when utilization_pct exceeds expected_booking_pct (high-utilization guard).
+      - name: estimation_method
+        description: global_rate (default formula) or remaining_hours (high-utilization guard).
+      - name: estimated_breakage_usd
+        description: Estimated breakage revenue in USD for the open cycle.
+      - name: estimated_unbooked_hours
+        description: Estimated hours that will remain unbooked at cycle end.
+      - name: country_code
+        description: Student country code.
+      - name: acquisition_channel
+        description: Student acquisition channel.
+      - name: persona
+        description: Student persona segment.
+      - name: first_subject
+        description: Student first subject / language learned.

@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: mart_breakage_revenue
+    description: >
+      Payment-grain breakage revenue for PayOps Looker dashboard. One row per payment.
+      type = actual (closed cycle, final breakage) | predicted (open cycle, estimate).
+    columns:
+      - name: payment_id
+        description: Unique payment identifier (one row per payment).
+        tests:
+          - unique
+          - not_null
+      - name: payment_date
+        description: Payment date (day-level time dimension).
+      - name: as_of_date
+        description: >
+          Snapshot date for breakage logic. In production typically yesterday;
+          case study uses 2026-04-17 as the operational "as of now" date.
+      - name: payment_year
+        description: payment_date truncated to year (Looker time grain).
+      - name: payment_quarter
+        description: payment_date truncated to quarter (Looker time grain).
+      - name: payment_month
+        description: payment_date truncated to month (Looker time grain).
+      - name: type
+        description: actual (final breakage) | predicted (estimated breakage) — main chart series.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['actual', 'predicted']
+      - name: revenue
+        description: Breakage revenue in USD (unbooked hours × price_per_hour).
+      - name: subject_learned
+        description: Language / subject the student signed up to learn (from first_subject).
+      - name: persona
+        description: Student persona segment for filtering and breakdowns.
+      - name: country_code
+        description: Student country code for filtering and breakdowns.
+      - name: acquisition_channel
+        description: Student acquisition channel for filtering and breakdowns.

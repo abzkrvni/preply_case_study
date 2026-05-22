@@ -1,0 +1,49 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Case study CSVs loaded into BigQuery (dataset from BQ_DATASET_RAW).
+    database: "{{ env_var('BQ_PROJECT_ID') }}"
+    schema: "{{ env_var('BQ_DATASET_RAW') }}"
+    tables:
+      - name: students
+        description: Student dimension (~3k rows). File raw_students.csv.
+        columns:
+          - name: student_id
+            description: Unique student identifier.
+          - name: join_ts
+            description: Timestamp when the student joined.
+          - name: country_code
+            description: Student country code.
+          - name: acquisition_channel
+            description: Acquisition channel (CRM, Paid, Direct & Brand, WoM, Other).
+          - name: persona
+            description: Student persona segment.
+          - name: first_subject
+            description: First subject / language learned.
+
+      - name: payments
+        description: Payment events (~9.7k rows). File raw_payments.csv.
+        columns:
+          - name: payment_id
+            description: Unique payment identifier.
+          - name: student_id
+            description: Student who made the payment.
+          - name: payment_ts
+            description: Payment timestamp (cycle start).
+          - name: hours
+            description: Hours purchased in the plan.
+          - name: price_per_hour_usd
+            description: Price per hour in USD.
+
+      - name: lessons
+        description: Lesson bookings (~53k rows). File raw_lessons.csv.
+        columns:
+          - name: lesson_id
+            description: Unique lesson identifier.
+          - name: student_id
+            description: Student who booked the lesson.
+          - name: booking_ts
+            description: Lesson booking timestamp.
+          - name: hours_booked
+            description: Hours booked for the lesson.
